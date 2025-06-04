@@ -68,7 +68,7 @@ int main() {
 
   #ifdef _WIN32
     printf("> q para sair\n");
-    getchar()
+    getchar();
   #endif
 }
 
