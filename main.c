@@ -65,11 +65,6 @@ int main() {
   }
 
   printf("\n");
-
-  #ifdef _WIN32
-    printf("> q para sair\n");
-    getchar();
-  #endif
 }
 
 int jogada_valida(int i, int j, const char tabuleiro[3][3]) {
