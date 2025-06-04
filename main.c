@@ -2,15 +2,10 @@
 #include <ctype.h>
 #include <string.h>
 
-typedef struct Jogada {
-  int i;
-  int j;
-} Jogada;
-
 void print_tabuleiro(int cabecalho, const char valores[3][3]);
-int encontrar_vencedor(int *vencedor, int rodada, const char tabuleiro[3][3]);
+int encontrar_vencedor(int rodada, const char tabuleiro[3][3]);
 int jogada_valida(int i, int j, const char tabuleiro[3][3]);
-Jogada pegar_jogada();
+int pegar_jogada(int *i, int *j);
 
 int main() {
   int jogo = 1;
@@ -18,6 +13,9 @@ int main() {
 
   int jogada_invalida = 0;
   int sair = 0;
+
+  int i = 0;
+  int j = 0;
 
   int vencedor = 0;
 
@@ -28,7 +26,6 @@ int main() {
   };
 
   while (jogo) {
-    printf("\033[H\033[2J");
     print_tabuleiro(1, tabuleiro);
 
     if (jogada_invalida) {
@@ -36,21 +33,17 @@ int main() {
       jogada_invalida = 0;
     }
 
-    Jogada jogada = pegar_jogada(&sair);
-    int i = jogada.i;
-    int j = jogada.j;
+    int sair = pegar_jogada(&i, &j);
+    if (sair) return 0;
 
-    if (sair == 1) return 0;
-
-    if (jogada_valida(i, j, tabuleiro) == 0) {
+    if (!jogada_valida(i, j, tabuleiro)) {
       jogada_invalida = 1;
       continue;
     }
 
     tabuleiro[i][j] = rodada % 2 ? 'X' : 'O';
     
-    encontrar_vencedor(&vencedor, rodada, tabuleiro);
-
+    vencedor = encontrar_vencedor(rodada, tabuleiro);
     if (vencedor == 1 || vencedor == 2) break;
 
     rodada++;
@@ -73,7 +66,6 @@ int main() {
   printf("\n");
 }
 
-
 int jogada_valida(int i, int j, const char tabuleiro[3][3]) {
     if (i < 0 || i > 2 || j < 0 || j > 2) {
       return 0;
@@ -85,7 +77,7 @@ int jogada_valida(int i, int j, const char tabuleiro[3][3]) {
     return 1;
 }
 
-int encontrar_vencedor(int *vencedor, int rodada, const char tabuleiro[3][3]) {
+int encontrar_vencedor(int rodada, const char tabuleiro[3][3]) {
     if (
       (tabuleiro[0][0] == 'X' && tabuleiro[0][1] == 'X' && tabuleiro[0][2] == 'X') ||
       (tabuleiro[1][0] == 'X' && tabuleiro[1][1] == 'X' && tabuleiro[1][2] == 'X') ||
@@ -96,8 +88,7 @@ int encontrar_vencedor(int *vencedor, int rodada, const char tabuleiro[3][3]) {
       (tabuleiro[0][0] == 'X' && tabuleiro[1][1] == 'X' && tabuleiro[2][2] == 'X') ||
       (tabuleiro[0][2] == 'X' && tabuleiro[1][1] == 'X' && tabuleiro[2][0] == 'X')
     ) {
-      *vencedor = 1;
-      return 0;
+      return 1;
     }
 
     if (
@@ -110,29 +101,28 @@ int encontrar_vencedor(int *vencedor, int rodada, const char tabuleiro[3][3]) {
       (tabuleiro[0][0] == 'O' && tabuleiro[1][1] == 'O' && tabuleiro[2][2] == 'O') ||
       (tabuleiro[0][2] == 'O' && tabuleiro[1][1] == 'O' && tabuleiro[2][0] == 'O')
     ) {
-      *vencedor = 2;
-      return 0;
+      return 2;
     }
 
     if (rodada == 9) return 0;
 }
 
-Jogada pegar_jogada(int *sair) {
-    Jogada jogada;
-    char jogada_escolhida[2];
+int pegar_jogada(int *i, int *j) {
+    char jogada_escolhida[100];
     
     printf("> Escolha uma jogada ('q' para sair): ");
     scanf("%s", jogada_escolhida);
 
-    if (jogada_escolhida[0] == 'q') *sair = 1;
+    if (jogada_escolhida[0] == 'q') return 1;
     
-    jogada.i = (int) jogada_escolhida[1] - 48 - 1;
-    jogada.j = (int) toupper(jogada_escolhida[0]) - 65;
-  
-    return jogada;
+    *i = jogada_escolhida[1] - 48 - 1;
+    *j = toupper(jogada_escolhida[0]) - 65;
+    return 0;
 }
 
 void print_tabuleiro(int cabecalho, const char valores[3][3]) {
+  printf("\033[H\033[2J");
+
   if (cabecalho) {
     printf("======== Jogo da Velha ========\n");
   }
