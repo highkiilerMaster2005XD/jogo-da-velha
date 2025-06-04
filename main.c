@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <stdlib.h>
 #include <ctype.h>
 #include <string.h>
 
@@ -64,6 +65,12 @@ int main() {
   }
 
   printf("\n");
+
+  #ifdef _WIN32
+    printf("<Enter para sair>\n");
+    int _;
+    scanf("%d", &_);
+  #endif
 }
 
 int jogada_valida(int i, int j, const char tabuleiro[3][3]) {
@@ -121,26 +128,32 @@ int pegar_jogada(int *i, int *j) {
 }
 
 void print_tabuleiro(int cabecalho, const char valores[3][3]) {
-  printf("\033[H\033[2J");
+  #ifdef _WIN32
+    system("cls");
+  #elif defined(__linux__)
+    printf("\033[2J\033[H");
+  #else
+    printf("Sistema operacional não identificado\n");
+  #endif
 
   if (cabecalho) {
     printf("======== Jogo da Velha ========\n");
   }
 
   printf("         ");
-  printf("╔═══╦═══╦═══╗\n");
+  printf("+---+---+---+\n");
   printf("       3 ");
-  printf("║ %c ║ %c ║ %c ║\n", valores[2][0], valores[2][1], valores[2][2]);
+  printf("| %c | %c | %c |\n", valores[2][0], valores[2][1], valores[2][2]);
   printf("         ");
-  printf("╠═══╬═══╬═══╣\n");
+  printf("+---+---+---+\n");
   printf("       2 ");
-  printf("║ %c ║ %c ║ %c ║\n", valores[1][0], valores[1][1], valores[1][2]);
+  printf("| %c | %c | %c |\n", valores[1][0], valores[1][1], valores[1][2]);
   printf("         ");
-  printf("╠═══╬═══╬═══╣\n");
+  printf("+---+---+---+\n");
   printf("       1 ");
-  printf("║ %c ║ %c ║ %c ║\n", valores[0][0], valores[0][1], valores[0][2]);
+  printf("| %c | %c | %c |\n", valores[0][0], valores[0][1], valores[0][2]);
   printf("         ");
-  printf("╚═══╩═══╩═══╝\n");
+  printf("+---+---+---+\n");
   printf("         ");
   printf("  A   B   C  \n");
 }
