@@ -67,9 +67,8 @@ int main() {
   printf("\n");
 
   #ifdef _WIN32
-    printf("<Enter para sair>\n");
-    int _;
-    scanf("%d", &_);
+    printf("> q para sair\n");
+    getchar()
   #endif
 }
 
